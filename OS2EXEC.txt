@@ -1,0 +1,124 @@
+===============================================================================
+os2exec.doc   EXECUTING OS/2 PROGRAMS FROM DOS SESSION              05-Jan-1993
+===============================================================================
+                                     Copyright (c) 1992-1993 by Eberhard Mattes
+
+Enclosed you'll find the following files:
+
+os2exec.doc     This file
+os2exec.c       Source for os2exec.exe
+os2exec.exe     DOS program to execute OS/2 programs
+os2execd.c      Source for os2execd.exe
+os2execd.exe    OS/2 program which receives requests from DOS programs
+makefile        Makefile for compiling the two programs
+
+
+os2exec and os2execd are copyright (c) 1992-1993 by Eberhard Mattes.
+All rights are reserved.  Copying of these files is authorized only if
+(1) you are Eberhard Mattes, or if
+(2) you make absolutely no changes to your copy, or
+(3) you rename os2execd and os2exec and change the name of the named
+    pipe to something different from \pipe\os2exec.em
+
+These restrictions are required to ensure that existing applications
+continue to work if you change os2execd.
+
+
+Usage:
+
+Run
+
+  os2execd
+
+in a OS/2 session.  The following command line options are available:
+
+  -s  switch windows (make the os2execd session active when executing
+      a command, switch back after executing the command)
+
+  -v  verbose mode (display information for debugging)
+
+
+Type
+
+  os2exec <command>
+
+in a DOS session to let os2execd execute the OS/2 command <command> by
+invoking CMD.EXE.  All environment variables with the exception of
+COMSPEC, PROMPT and PATH are passed to the OS/2 session.  If you
+precede <command> with -x, CMD.EXE is not called and the program is
+executed directly instead.
+
+Type
+
+  os2exec -q
+
+in a DOS session to make os2execd quit.
+
+
+If one os2execd is running, only one DOS program at a time can connect
+to os2execd.  To allow for more DOS programs connecting to os2execd,
+run multiple instances of os2execd.
+
+
+If you want to write a DOS program which uses os2execd, here's what
+you have to do:
+
+  - open a file named \pipe\os2exec.em in read/write mode
+
+  - send messages
+
+  - wait for response
+
+  - close the file
+
+Messages start with two bytes indicating the length of the message.
+These two bytes are not included in the length.  The low-order byte of
+the length is sent first.
+
+The third byte of a message is a command character.  The following
+commands are available:
+
+  A  Acknowledge for return code
+
+  Q  Stop os2execd.  You should wait for acknowledge before closing
+     the file
+
+  C  Execute command by CMD.EXE: command
+
+  E  Send environment variable: name=value
+
+  X  Execute command directly: command
+
+  W  Set working directory: directory or d:directory
+
+Starting at the forth byte the argument (see list above, the command
+is shown after the colon) should be sent.
+
+os2execd sends back a response for the C and X commands using the same
+length/command/arguments format.  The following command bytes are
+defined:
+
+  A  Acknowledge for Q command
+
+  R  Program executed: return code (or -1 if failed)
+
+
+NO WARRANTY: No guarantee is made as to the proper functioning of the
+software.  No liability will be admitted for damage resulting from
+using the software.
+
+The author of os2exec and os2execd is:
+
+  Eberhard Mattes
+  Teckstraáe 81
+  D-7141 M”glingen
+  Germany
+
+  Internet: mattes@azu.informatik.uni-stuttgart.de        (subject to change)
+
+No telephone calls please! It must be stressed that the author does
+not reply to letters if you don't include return postage
+(international postal reply coupon if you're outside Germany) and a
+self-addressed envelope.
+
+                                  -- END --

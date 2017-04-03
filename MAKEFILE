@@ -1,0 +1,13 @@
+#
+# makefile for os2exec (using Microsoft C 6.00A)
+#
+#CCOPT=-Zi -Od
+CCOPT=
+
+all:    os2exec.exe os2execd.exe
+
+os2exec.exe:    os2exec.c
+    cl $(CCOPT) -W3 -Lr -AS os2exec.c
+
+os2execd.exe:   os2execd.c
+    cl $(CCOPT) -W3 -Lp -AL os2execd.c -link /pmtype:vio
